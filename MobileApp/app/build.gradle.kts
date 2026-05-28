@@ -84,6 +84,8 @@ dependencies {
     implementation(libs.vosk.android) { artifact { type = "aar" } }
     implementation(libs.jna) { artifact { type = "aar" } }
 
+    implementation(libs.timber)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.koin.test)

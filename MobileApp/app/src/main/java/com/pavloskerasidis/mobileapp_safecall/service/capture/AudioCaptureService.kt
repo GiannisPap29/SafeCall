@@ -49,6 +49,7 @@ class AudioCaptureService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        logger.i(TAG, "onCreate")
         startInForeground()
         if (!hasPermission(Manifest.permission.RECORD_AUDIO) ||
             !hasPermission(Manifest.permission.READ_PHONE_STATE)
@@ -59,6 +60,7 @@ class AudioCaptureService : Service() {
         }
         startMonitoring()
         scope.launch { observeCallState() }
+        logger.i(TAG, "monitor registered, waiting for OFFHOOK")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int = START_STICKY
@@ -80,11 +82,12 @@ class AudioCaptureService : Service() {
 
     private suspend fun observeCallState() {
         callStateMonitor.state.collect { state ->
+            logger.i(TAG, "call state → $state")
             when (state) {
                 CallStateMonitor.State.Active -> {
                     if (captureJob == null) {
                         seenActive = true
-                        logger.i(TAG, "call active → starting pipeline")
+                        logger.i(TAG, "starting capture pipeline")
                         captureJob = scope.launch { runPipeline() }
                     }
                 }
@@ -117,6 +120,7 @@ class AudioCaptureService : Service() {
     }
 
     private suspend fun processChunk(chunk: AudioChunk, window: RollingTranscriptWindow) {
+        logger.i(TAG, "chunk @${chunk.startTimestampMs} bytes=${chunk.pcm16.size}")
         val transcript = when (val r = transcribe(chunk)) {
             is AppResult.Success -> r.value
             is AppResult.Failure -> {
@@ -124,11 +128,15 @@ class AudioCaptureService : Service() {
                 return
             }
         }
+        logger.i(TAG, "transcript: '${transcript.text}' (conf=${transcript.confidence})")
         if (transcript.text.isBlank()) return
 
         val snapshot = window.push(transcript)
         when (val r = analyze(snapshot)) {
-            is AppResult.Success -> raiseAlert(r.value)
+            is AppResult.Success -> {
+                logger.i(TAG, "verdict: ${r.value}")
+                raiseAlert(r.value)
+            }
             is AppResult.Failure -> logger.w(TAG, "analyze failed: ${r.error.message}")
         }
     }
@@ -152,8 +160,7 @@ class AudioCaptureService : Service() {
             startForeground(
                 NOTIFICATION_ID,
                 notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE or
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL,
             )
         } else {
             @Suppress("DEPRECATION")
