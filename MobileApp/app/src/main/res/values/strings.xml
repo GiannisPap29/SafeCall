@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">MobileApp_SafeCall</string>
+    <string name="app_name">SafeCall</string>
+
+    <string name="setup_title">SafeCall needs these to protect you</string>
+    <string name="setup_mic_grant">Allow microphone</string>
+    <string name="setup_mic_granted">Microphone — granted</string>
+    <string name="setup_screener_grant">Set as default call screener</string>
+    <string name="setup_screener_granted">Default screener — set</string>
+    <string name="setup_overlay_grant">Allow on-screen alert</string>
+    <string name="setup_overlay_granted">On-screen alert — granted</string>
+
+    <string name="capture_notification_title">SafeCall is active</string>
+    <string name="capture_notification_text">Listening for scam signals on this call</string>
 </resources>
