@@ -1,0 +1,52 @@
+# ── Secrets ──────────────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+# keep the example template
+!.env.example
+
+# ── Go (backend) ─────────────────────────────────────────────────────────────
+# compiled binaries
+backend/server
+backend/safecall
+backend/*.exe
+# test / coverage artefacts
+*.test
+*.out
+# vendor directory (if ever used)
+backend/vendor/
+
+# ── Node / Vite (frontend) ───────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.cache/
+
+# ── Android (MobileApp) ──────────────────────────────────────────────────────
+*.iml
+.gradle/
+local.properties
+MobileApp/.idea/caches/
+MobileApp/.idea/libraries/
+MobileApp/.idea/modules.xml
+MobileApp/.idea/workspace.xml
+MobileApp/.idea/navEditor.xml
+MobileApp/.idea/assetWizardSettings.xml
+MobileApp/build/
+MobileApp/app/build/
+MobileApp/captures/
+MobileApp/.externalNativeBuild/
+MobileApp/.cxx/
+
+# ── IDE ──────────────────────────────────────────────────────────────────────
+.vscode/
+*.swp
+*.swo
+
+# ── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Local tool config ────────────────────────────────────────────────────────
+.claude/settings.local.json
