@@ -18,6 +18,7 @@ data class SetupUiState(
     val isDefaultScreener: Boolean = false,
     val hasRecordAudio: Boolean = false,
     val hasReadPhoneState: Boolean = false,
+    val hasNotifications: Boolean = false,
     val hasOverlay: Boolean = false,
     val model: SpeechModelInstaller.InstallState = SpeechModelInstaller.InstallState.NotInstalled,
 )
@@ -36,6 +37,7 @@ class SetupViewModel(
                 isDefaultScreener = perms.isDefaultScreener,
                 hasRecordAudio = perms.hasRecordAudio,
                 hasReadPhoneState = perms.hasReadPhoneState,
+                hasNotifications = perms.hasNotifications,
                 hasOverlay = perms.hasOverlay,
                 model = model,
             )
@@ -49,12 +51,14 @@ class SetupViewModel(
         isDefaultScreener: Boolean,
         hasRecordAudio: Boolean,
         hasReadPhoneState: Boolean,
+        hasNotifications: Boolean,
         hasOverlay: Boolean,
     ) {
         permissions.value = PermissionState(
             isDefaultScreener = isDefaultScreener,
             hasRecordAudio = hasRecordAudio,
             hasReadPhoneState = hasReadPhoneState,
+            hasNotifications = hasNotifications,
             hasOverlay = hasOverlay,
         )
     }
@@ -72,6 +76,7 @@ class SetupViewModel(
         val isDefaultScreener: Boolean = false,
         val hasRecordAudio: Boolean = false,
         val hasReadPhoneState: Boolean = false,
+        val hasNotifications: Boolean = false,
         val hasOverlay: Boolean = false,
     )
 }

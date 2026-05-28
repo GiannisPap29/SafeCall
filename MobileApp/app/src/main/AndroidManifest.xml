@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
@@ -37,7 +38,7 @@
         <service
             android:name=".service.screening.ScamScreeningService"
             android:exported="true"
-            android:permission="android.permission.BIND_SCREENING_SERVICE">
+        android:permission="android.permission.BIND_SCREENING_SERVICE">
             <intent-filter>
                 <action android:name="android.telecom.CallScreeningService" />
             </intent-filter>
@@ -47,6 +48,13 @@
             android:name=".service.capture.AudioCaptureService"
             android:exported="false"
             android:foregroundServiceType="phoneCall" />
+
+        <activity
+            android:name=".service.capture.CaptureLauncherActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay" />
 
         <service
             android:name=".service.alert.OverlayAlertService"

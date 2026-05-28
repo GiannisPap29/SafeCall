@@ -1,14 +1,18 @@
 package com.pavloskerasidis.mobileapp_safecall.service.alert
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.IBinder
 import android.provider.Settings
+import android.telecom.TelecomManager
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -16,6 +20,7 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.pavloskerasidis.mobileapp_safecall.R
 import com.pavloskerasidis.mobileapp_safecall.core.logging.Logger
 import org.koin.android.ext.android.inject
@@ -128,7 +133,10 @@ class OverlayAlertService : Service() {
         }
         val dismiss = Button(this).apply {
             text = getString(R.string.overlay_dismiss)
-            setOnClickListener { stopSelf() }
+            setOnClickListener {
+                endActiveCall()
+                stopSelf()
+            }
         }
 
         container.addView(title)
@@ -142,6 +150,23 @@ class OverlayAlertService : Service() {
 
     private fun dp(value: Float): Int =
         (value * resources.displayMetrics.density).toInt()
+
+    private fun endActiveCall() {
+        val granted = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ANSWER_PHONE_CALLS,
+        ) == PackageManager.PERMISSION_GRANTED
+        if (!granted) {
+            logger.w(TAG, "ANSWER_PHONE_CALLS not granted — dismiss won't end the call")
+            return
+        }
+        runCatching {
+            val tm = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+            @SuppressLint("MissingPermission")
+            val ok = tm.endCall()
+            logger.i(TAG, "dismiss: TelecomManager.endCall() returned $ok")
+        }.onFailure { logger.w(TAG, "endCall() threw", it) }
+    }
 
     companion object {
         const val EXTRA_REASON = "reason"

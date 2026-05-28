@@ -19,6 +19,12 @@
     <string name="capture_notification_title">Το SafeCall είναι ενεργό</string>
     <string name="capture_notification_text">Ακούει για σημάδια απάτης στην κλήση</string>
 
+    <string name="arm_notification_title">Εισερχόμενη κλήση</string>
+    <string name="arm_notification_text">Πάτησε για να ενεργοποιήσεις το SafeCall σε αυτή την κλήση</string>
+
+    <string name="setup_notifications_grant">Επίτρεψε τις ειδοποιήσεις</string>
+    <string name="setup_notifications_granted">Ειδοποιήσεις — εγκρίθηκαν</string>
+
     <string name="overlay_title_scam">⛔ Πιθανή απάτη</string>
     <string name="overlay_title_suspicious">⚠ Ύποπτος καλών</string>
     <string name="overlay_default_reason">Πιθανή απάτη σε αυτή την κλήση.</string>

@@ -42,6 +42,7 @@ fun SetupScreen(
             isDefaultScreener = isDefaultScreener(context),
             hasRecordAudio = hasPermission(context, Manifest.permission.RECORD_AUDIO),
             hasReadPhoneState = hasPermission(context, Manifest.permission.READ_PHONE_STATE),
+            hasNotifications = hasPermission(context, Manifest.permission.POST_NOTIFICATIONS),
             hasOverlay = Settings.canDrawOverlays(context),
         )
     }
@@ -51,6 +52,10 @@ fun SetupScreen(
     ) { probe() }
 
     val phoneLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { probe() }
+
+    val notifLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { probe() }
 
@@ -81,6 +86,13 @@ fun SetupScreen(
             Text(
                 if (state.hasReadPhoneState) stringResource(R.string.setup_phone_granted)
                 else stringResource(R.string.setup_phone_grant)
+            )
+        }
+
+        Button(onClick = { notifLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) }) {
+            Text(
+                if (state.hasNotifications) stringResource(R.string.setup_notifications_granted)
+                else stringResource(R.string.setup_notifications_grant)
             )
         }
 

@@ -39,6 +39,12 @@ android {
                 "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip",
             )}\"",
         )
+        buildConfigField(
+            "String",
+            "UPLOAD_ENDPOINT",
+            "\"${localProps.getProperty("UPLOAD_ENDPOINT", "")}\"",
+        )
+        buildConfigField("String", "UPLOAD_API_KEY", "\"${localOrEmpty("UPLOAD_API_KEY")}\"")
     }
 
     buildTypes {

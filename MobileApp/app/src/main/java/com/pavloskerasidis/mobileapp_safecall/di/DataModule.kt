@@ -9,7 +9,9 @@ import com.pavloskerasidis.mobileapp_safecall.data.local.stt.VoskSpeechTranscrib
 import com.pavloskerasidis.mobileapp_safecall.data.remote.claude.ClaudeApi
 import com.pavloskerasidis.mobileapp_safecall.data.remote.claude.ClaudeScamDetector
 import com.pavloskerasidis.mobileapp_safecall.data.remote.claude.KtorClaudeApi
+import com.pavloskerasidis.mobileapp_safecall.data.remote.upload.KtorChunkUploader
 import com.pavloskerasidis.mobileapp_safecall.domain.repository.CallBlocklistRepository
+import com.pavloskerasidis.mobileapp_safecall.domain.repository.ChunkUploader
 import com.pavloskerasidis.mobileapp_safecall.domain.repository.ScamDetector
 import com.pavloskerasidis.mobileapp_safecall.domain.repository.SpeechModelInstaller
 import com.pavloskerasidis.mobileapp_safecall.domain.repository.SpeechTranscriber
@@ -46,4 +48,8 @@ val dataModule = module {
     }
 
     single<CallBlocklistRepository> { BlocklistDataStore(context = androidContext()) }
+
+    single<ChunkUploader> {
+        KtorChunkUploader(client = get(), keys = get(), logger = get())
+    }
 }
