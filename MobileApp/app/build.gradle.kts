@@ -31,6 +31,14 @@ android {
 
         buildConfigField("String", "CLAUDE_API_KEY", "\"${localOrEmpty("CLAUDE_API_KEY")}\"")
         buildConfigField("String", "CLAUDE_MODEL", "\"claude-haiku-4-5\"")
+        buildConfigField(
+            "String",
+            "VOSK_MODEL_URL",
+            "\"${localProps.getProperty(
+                "VOSK_MODEL_URL",
+                "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip",
+            )}\"",
+        )
     }
 
     buildTypes {

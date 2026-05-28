@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">SafeCall</string>
+
+    <string name="setup_title">Το SafeCall χρειάζεται αυτά για να σε προστατέψει</string>
+    <string name="setup_mic_grant">Επίτρεψε το μικρόφωνο</string>
+    <string name="setup_mic_granted">Μικρόφωνο — εγκρίθηκε</string>
+    <string name="setup_phone_grant">Επίτρεψε την κατάσταση κλήσης</string>
+    <string name="setup_phone_granted">Κατάσταση κλήσης — εγκρίθηκε</string>
+    <string name="setup_screener_grant">Όρισέ το ως προεπιλεγμένο φίλτρο κλήσεων</string>
+    <string name="setup_screener_granted">Προεπιλεγμένο φίλτρο — ενεργό</string>
+    <string name="setup_overlay_grant">Επίτρεψε την προειδοποίηση στην οθόνη</string>
+    <string name="setup_overlay_granted">Προειδοποίηση οθόνης — εγκρίθηκε</string>
+    <string name="setup_model_install">Λήψη φωνητικού μοντέλου</string>
+    <string name="setup_model_installing">Λήψη φωνητικού μοντέλου… %1$d%%</string>
+    <string name="setup_model_unpacking">Εγκατάσταση φωνητικού μοντέλου…</string>
+    <string name="setup_model_installed">Φωνητικό μοντέλο — έτοιμο</string>
+    <string name="setup_model_failed">Το μοντέλο απέτυχε — πάτησε για επανάληψη</string>
+
+    <string name="capture_notification_title">Το SafeCall είναι ενεργό</string>
+    <string name="capture_notification_text">Ακούει για σημάδια απάτης στην κλήση</string>
+
+    <string name="overlay_title_scam">⛔ Πιθανή απάτη</string>
+    <string name="overlay_title_suspicious">⚠ Ύποπτος καλών</string>
+    <string name="overlay_default_reason">Πιθανή απάτη σε αυτή την κλήση.</string>
+    <string name="overlay_dismiss">Απόρριψη</string>
+</resources>

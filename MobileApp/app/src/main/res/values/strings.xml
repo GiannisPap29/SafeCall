@@ -4,10 +4,17 @@
     <string name="setup_title">SafeCall needs these to protect you</string>
     <string name="setup_mic_grant">Allow microphone</string>
     <string name="setup_mic_granted">Microphone — granted</string>
+    <string name="setup_phone_grant">Allow phone state</string>
+    <string name="setup_phone_granted">Phone state — granted</string>
     <string name="setup_screener_grant">Set as default call screener</string>
     <string name="setup_screener_granted">Default screener — set</string>
     <string name="setup_overlay_grant">Allow on-screen alert</string>
     <string name="setup_overlay_granted">On-screen alert — granted</string>
+    <string name="setup_model_install">Download voice model</string>
+    <string name="setup_model_installing">Downloading voice model… %1$d%%</string>
+    <string name="setup_model_unpacking">Installing voice model…</string>
+    <string name="setup_model_installed">Voice model — ready</string>
+    <string name="setup_model_failed">Voice model — failed, tap to retry</string>
 
     <string name="capture_notification_title">SafeCall is active</string>
     <string name="capture_notification_text">Listening for scam signals on this call</string>

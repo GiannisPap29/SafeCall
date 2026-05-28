@@ -2,3 +2,12 @@
 # These are wired into BuildConfig in app/build.gradle.kts.
 
 CLAUDE_API_KEY=
+
+# Speech-recognition model. Defaults to the small English model (~40 MB).
+# Browse the full list at https://alphacephei.com/vosk/models
+#
+# Useful overrides:
+#   Small English (default): https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip   (~40 MB)
+#   Greek (only big one):    https://alphacephei.com/vosk/models/vosk-model-el-gr-0.7.zip          (~1.1 GB)
+#
+# VOSK_MODEL_URL=

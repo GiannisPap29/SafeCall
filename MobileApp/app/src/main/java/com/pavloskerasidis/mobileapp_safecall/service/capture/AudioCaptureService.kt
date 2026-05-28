@@ -30,28 +30,35 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import java.util.concurrent.Executors
 
 class AudioCaptureService : Service() {
 
     private val dispatchers: AppDispatchers by inject()
     private val logger: Logger by inject()
     private val recorder: AudioRecorder by inject()
+    private val callStateMonitor: CallStateMonitor by inject()
     private val transcribe: TranscribeAudioChunkUseCase by inject()
     private val analyze: AnalyzeLiveTranscriptUseCase by inject()
     private val raiseAlert: RaiseScamAlertUseCase by inject()
 
     private val scope by lazy { CoroutineScope(SupervisorJob() + dispatchers.io) }
+    private val telephonyExecutor by lazy { Executors.newSingleThreadExecutor() }
     private var captureJob: Job? = null
+    private var seenActive: Boolean = false
 
     override fun onCreate() {
         super.onCreate()
         startInForeground()
-        if (!hasMicPermission()) {
-            logger.w(TAG, "RECORD_AUDIO not granted; stopping")
+        if (!hasPermission(Manifest.permission.RECORD_AUDIO) ||
+            !hasPermission(Manifest.permission.READ_PHONE_STATE)
+        ) {
+            logger.w(TAG, "missing RECORD_AUDIO or READ_PHONE_STATE; stopping")
             stopSelf()
             return
         }
-        captureJob = scope.launch { runPipeline() }
+        startMonitoring()
+        scope.launch { observeCallState() }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int = START_STICKY
@@ -60,11 +67,39 @@ class AudioCaptureService : Service() {
 
     override fun onDestroy() {
         captureJob?.cancel()
+        callStateMonitor.stop()
+        telephonyExecutor.shutdownNow()
         scope.cancel()
         super.onDestroy()
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission") // checked in onCreate before starting
+    private fun startMonitoring() {
+        callStateMonitor.start(telephonyExecutor)
+    }
+
+    private suspend fun observeCallState() {
+        callStateMonitor.state.collect { state ->
+            when (state) {
+                CallStateMonitor.State.Active -> {
+                    if (captureJob == null) {
+                        seenActive = true
+                        logger.i(TAG, "call active → starting pipeline")
+                        captureJob = scope.launch { runPipeline() }
+                    }
+                }
+                CallStateMonitor.State.Idle -> {
+                    if (seenActive) {
+                        logger.i(TAG, "call ended → tearing down")
+                        stopSelf()
+                    }
+                }
+                CallStateMonitor.State.Ringing -> Unit
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission") // checked in onCreate before starting
     private suspend fun runPipeline() {
         val chunker = AudioChunker(SAMPLE_RATE_HZ, CHUNK_DURATION_MS)
         val window = RollingTranscriptWindow(WINDOW_CAPACITY)
@@ -98,9 +133,8 @@ class AudioCaptureService : Service() {
         }
     }
 
-    private fun hasMicPermission(): Boolean =
-        ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
-            PackageManager.PERMISSION_GRANTED
+    private fun hasPermission(permission: String): Boolean =
+        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 
     private fun startInForeground() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
