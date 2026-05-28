@@ -99,3 +99,42 @@ field: audio (file)
 | password          | 20     |
 | crypto            | 20     |
 | urgent            | 15     |
+
+
+## Next Steps
+
+- [ ] Add mobile app (Android/iOS) with camera/QR code scanning
+- [ ] Implement real-time transcription streaming
+- [ ] Add user authentication and history
+- [ ] Deploy backend to cloud (Heroku, Render, or AWS)
+- [ ] Add unit tests for scam detection logic
+- [ ] Implement dark mode and responsive design
+- [ ] Add export/share functionality for transcriptions
+- [ ] Create admin dashboard for monitoring and analytics
+- [ ] Add multi-language support
+- [ ] Implement voice activity detection for better recording
+- [ ] Add noise cancellation and audio enhancement
+- [ ] Create API documentation with Swagger/OpenAPI
+- [ ] Add rate limiting and security headers
+- [ ] Implement background job processing for long transcriptions
+- [ ] Add push notifications for high-risk detections
+- [ ] Create mobile app with camera/QR code scanning
+- [ ] Add offline mode with local transcription (e.g., using Whisper)
+- [ ] Implement user feedback system to improve scam detection
+- [ ] Add support for multiple AI models (e.g., Google Speech-to-Text, Azure Speech)
+- [ ] Create admin dashboard for monitoring and analytics
+- [ ] Add multi-language support
+- [ ] Implement voice activity detection for better recording
+- [ ] Add noise cancellation and audio enhancement
+- [ ] Create API documentation with Swagger/OpenAPI
+- [ ] Add rate limiting and security headers
+- [ ] Implement background job processing for long transcriptions
+- [ ] Add push notifications for high-risk detections
+How to run:
+# Backend
+cd backend && cp .env.example .env  # set OPENAI_API_KEY
+go run ./cmd/server
+
+# Frontend (new terminal)
+cd frontend && npm run dev
+# → http://localhost:5173
