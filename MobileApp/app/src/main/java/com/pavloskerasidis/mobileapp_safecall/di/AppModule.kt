@@ -20,10 +20,13 @@ val appModule = module {
     single<Logger> { AndroidLogger() }
     single<ApiKeyProvider> { BuildConfigApiKeyProvider() }
 
+    single { Json { ignoreUnknownKeys = true; isLenient = true } }
+
     single {
         HttpClient(OkHttp) {
+            expectSuccess = true
             install(ContentNegotiation) {
-                json(Json { ignoreUnknownKeys = true })
+                json(get<Json>())
             }
             install(Logging) { level = LogLevel.INFO }
         }

@@ -16,6 +16,8 @@ datastore = "1.1.1"
 lifecycleViewmodelCompose = "2.10.0"
 turbine = "1.2.0"
 mockk = "1.13.13"
+vosk = "0.3.47"
+jna = "5.13.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,6 +54,9 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+
+vosk-android = { group = "com.alphacephei", name = "vosk-android", version.ref = "vosk" }
+jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

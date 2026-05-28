@@ -10,13 +10,14 @@ class OverlayAlertNotifier(
 ) : AlertNotifier {
 
     override suspend fun raise(verdict: ScamVerdict) {
-        val reason = when (verdict) {
+        val (severity, reason) = when (verdict) {
             is ScamVerdict.Safe -> return
-            is ScamVerdict.Suspicious -> verdict.reason
-            is ScamVerdict.Scam -> verdict.reason
+            is ScamVerdict.Suspicious -> OverlayAlertService.SEVERITY_SUSPICIOUS to verdict.reason
+            is ScamVerdict.Scam -> OverlayAlertService.SEVERITY_SCAM to verdict.reason
         }
         context.startService(
             Intent(context, OverlayAlertService::class.java)
+                .putExtra(OverlayAlertService.EXTRA_SEVERITY, severity)
                 .putExtra(OverlayAlertService.EXTRA_REASON, reason)
         )
     }

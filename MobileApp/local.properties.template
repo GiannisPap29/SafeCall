@@ -2,4 +2,3 @@
 # These are wired into BuildConfig in app/build.gradle.kts.
 
 CLAUDE_API_KEY=
-GOOGLE_STT_API_KEY=

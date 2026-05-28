@@ -11,4 +11,9 @@
 
     <string name="capture_notification_title">SafeCall is active</string>
     <string name="capture_notification_text">Listening for scam signals on this call</string>
+
+    <string name="overlay_title_scam">⛔ Likely scam</string>
+    <string name="overlay_title_suspicious">⚠ Suspicious caller</string>
+    <string name="overlay_default_reason">Possible scam detected on this call.</string>
+    <string name="overlay_dismiss">Dismiss</string>
 </resources>

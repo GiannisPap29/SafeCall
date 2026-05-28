@@ -30,7 +30,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "CLAUDE_API_KEY", "\"${localOrEmpty("CLAUDE_API_KEY")}\"")
-        buildConfigField("String", "GOOGLE_STT_API_KEY", "\"${localOrEmpty("GOOGLE_STT_API_KEY")}\"")
         buildConfigField("String", "CLAUDE_MODEL", "\"claude-haiku-4-5\"")
     }
 
@@ -73,6 +72,9 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.serialization.kotlinx.json)
+
+    implementation(libs.vosk.android) { artifact { type = "aar" } }
+    implementation(libs.jna) { artifact { type = "aar" } }
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

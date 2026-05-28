@@ -1,41 +1,57 @@
 package com.pavloskerasidis.mobileapp_safecall.service.capture
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
+import androidx.core.content.ContextCompat
 import com.pavloskerasidis.mobileapp_safecall.R
 import com.pavloskerasidis.mobileapp_safecall.core.dispatchers.AppDispatchers
 import com.pavloskerasidis.mobileapp_safecall.core.logging.Logger
+import com.pavloskerasidis.mobileapp_safecall.core.result.AppResult
+import com.pavloskerasidis.mobileapp_safecall.domain.analysis.RollingTranscriptWindow
+import com.pavloskerasidis.mobileapp_safecall.domain.model.AudioChunk
 import com.pavloskerasidis.mobileapp_safecall.domain.usecase.AnalyzeLiveTranscriptUseCase
 import com.pavloskerasidis.mobileapp_safecall.domain.usecase.RaiseScamAlertUseCase
-import com.pavloskerasidis.mobileapp_safecall.domain.repository.SpeechTranscriber
+import com.pavloskerasidis.mobileapp_safecall.domain.usecase.TranscribeAudioChunkUseCase
+import com.pavloskerasidis.mobileapp_safecall.service.audio.AudioChunker
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class AudioCaptureService : Service() {
 
     private val dispatchers: AppDispatchers by inject()
     private val logger: Logger by inject()
-    private val transcriber: SpeechTranscriber by inject()
+    private val recorder: AudioRecorder by inject()
+    private val transcribe: TranscribeAudioChunkUseCase by inject()
     private val analyze: AnalyzeLiveTranscriptUseCase by inject()
     private val raiseAlert: RaiseScamAlertUseCase by inject()
 
     private val scope by lazy { CoroutineScope(SupervisorJob() + dispatchers.io) }
+    private var captureJob: Job? = null
 
     override fun onCreate() {
         super.onCreate()
         startInForeground()
-        logger.i(TAG, "AudioCaptureService started")
-        // TODO: open AudioRecord(VOICE_COMMUNICATION, 16kHz, MONO, PCM_16BIT),
-        // feed bytes through AudioChunker, push chunks via transcriber → analyze → raiseAlert.
+        if (!hasMicPermission()) {
+            logger.w(TAG, "RECORD_AUDIO not granted; stopping")
+            stopSelf()
+            return
+        }
+        captureJob = scope.launch { runPipeline() }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int = START_STICKY
@@ -43,10 +59,48 @@ class AudioCaptureService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
+        captureJob?.cancel()
         scope.cancel()
-        // TODO: release AudioRecord
         super.onDestroy()
     }
+
+    @SuppressLint("MissingPermission")
+    private suspend fun runPipeline() {
+        val chunker = AudioChunker(SAMPLE_RATE_HZ, CHUNK_DURATION_MS)
+        val window = RollingTranscriptWindow(WINDOW_CAPACITY)
+        try {
+            recorder.pcmStream(SAMPLE_RATE_HZ, READ_BYTES).collect { bytes ->
+                val now = System.currentTimeMillis()
+                chunker.append(bytes, now).forEach { chunk ->
+                    processChunk(chunk, window)
+                }
+            }
+        } catch (t: Throwable) {
+            logger.e(TAG, "capture pipeline failed", t)
+            stopSelf()
+        }
+    }
+
+    private suspend fun processChunk(chunk: AudioChunk, window: RollingTranscriptWindow) {
+        val transcript = when (val r = transcribe(chunk)) {
+            is AppResult.Success -> r.value
+            is AppResult.Failure -> {
+                logger.w(TAG, "transcribe failed: ${r.error.message}")
+                return
+            }
+        }
+        if (transcript.text.isBlank()) return
+
+        val snapshot = window.push(transcript)
+        when (val r = analyze(snapshot)) {
+            is AppResult.Success -> raiseAlert(r.value)
+            is AppResult.Failure -> logger.w(TAG, "analyze failed: ${r.error.message}")
+        }
+    }
+
+    private fun hasMicPermission(): Boolean =
+        ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
+            PackageManager.PERMISSION_GRANTED
 
     private fun startInForeground() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -77,5 +131,10 @@ class AudioCaptureService : Service() {
         const val TAG = "AudioCaptureService"
         const val CHANNEL_ID = "safecall_capture"
         const val NOTIFICATION_ID = 1001
+
+        const val SAMPLE_RATE_HZ = 16_000
+        const val CHUNK_DURATION_MS = 3_000
+        const val READ_BYTES = 8_192
+        const val WINDOW_CAPACITY = 10
     }
 }
